@@ -11,6 +11,7 @@ using Syncfusion.EJ2.DocumentEditor;
 using WDocument = Syncfusion.DocIO.DLS.WordDocument;
 using WFormatType = Syncfusion.DocIO.FormatType;
 using Syncfusion.EJ2.SpellChecker;
+using System.Net;
 
 namespace EJ2DocumentEditorServer.Controllers
 {
