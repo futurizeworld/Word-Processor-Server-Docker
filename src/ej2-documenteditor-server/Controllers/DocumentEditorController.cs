@@ -99,7 +99,7 @@ namespace EJ2DocumentEditorServer.Controllers
                 return "{\"SpellCollection\":[],\"HasSpellingError\":false,\"Suggestions\":null}";
             }
         }
-		// GET api/values
+        // GET api/values
         [HttpGet]
         public IEnumerable<string> Get()
         {
@@ -144,7 +144,7 @@ namespace EJ2DocumentEditorServer.Controllers
         [HttpPost]
         [EnableCors("AllowAllOrigins")]
         [Route("SystemClipboard")]
-        public string SystemClipboard([FromBody]CustomParameter param)
+        public string SystemClipboard([FromBody] CustomParameter param)
         {
             if (param.content != null && param.content != "")
             {
@@ -181,7 +181,7 @@ namespace EJ2DocumentEditorServer.Controllers
         [HttpPost]
         [EnableCors("AllowAllOrigins")]
         [Route("RestrictEditing")]
-        public string[] RestrictEditing([FromBody]CustomRestrictParameter param)
+        public string[] RestrictEditing([FromBody] CustomRestrictParameter param)
         {
             if (param.passwordBase64 == "" && param.passwordBase64 == null)
                 return null;
@@ -208,7 +208,7 @@ namespace EJ2DocumentEditorServer.Controllers
         [Route("LoadDocument")]
         public string LoadDocument([FromForm] UploadDocument uploadDocument)
         {
-            string documentPath= Path.Combine(path, uploadDocument.DocumentName);
+            string documentPath = Path.Combine(path, uploadDocument.DocumentName);
             Stream stream = null;
             if (System.IO.File.Exists(documentPath))
             {
@@ -377,6 +377,36 @@ namespace EJ2DocumentEditorServer.Controllers
             WDocument document = new WDocument(stream, WFormatType.Docx);
             stream.Dispose();
             return document;
+        }
+
+        [AcceptVerbs("Post")]
+        [HttpPost]
+        [EnableCors("AllowAllOrigins")]
+        [Route("ImportFileURL")]
+        public string ImportFileURL([FromBody] FileUrlInfo param)
+        {
+            try
+            {
+                using (WebClient client = new WebClient())
+                {
+                    MemoryStream stream = new MemoryStream(client.DownloadData(param.fileUrl));
+                    WordDocument document = WordDocument.Load(stream, FormatType.Docx);
+                    string json = Newtonsoft.Json.JsonConvert.SerializeObject(document);
+                    document.Dispose();
+                    stream.Dispose();
+                    return json;
+                }
+            }
+            catch (Exception)
+            {
+                return "";
+            }
+        }
+
+        public class FileUrlInfo
+        {
+            public string fileUrl { get; set; }
+            public string Content { get; set; }
         }
     }
 
